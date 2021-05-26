@@ -8,6 +8,8 @@ trigger:
 
 pool:
   vmImage: windows-latest
+
+
 strategy:
   matrix:
     Python37:
