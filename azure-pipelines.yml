@@ -1,31 +1,32 @@
-# Python package
-# Create and test a Python package on multiple Python versions.
-# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
-
 trigger:
 - main
+
 
 pool:
   vmImage: windows-latest
 
+stages:
+  - stage: config_environment
+    displayName: config environment stage
+    jobs:
+      - job: config_environment_job1
+        steps:
+          - script: echo config_environment_job1 run
+            displayName: run script in one line
 
-strategy:
-  matrix:
-    Python37:
-      python.version: '3.7'
+          - script: |
+              echo config_environment_job1 run
+              echo config_environment_job1 run again
+            displayName: run script in multiple line
 
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+          - task: CopyFiles@2
+            inputs:
+              Contents: '**'
+              TargetFolder: 'c:\temp'
 
-- script: |
-    python -m pip install --upgrade pip
-    pip install -r requirement.txt
-  displayName: 'Install dependencies'
 
-- script: |
-    set
-  displayName: 'show environment value'
+  - stage: run_script
+    displayName: run script stage
+    dependsOn: config_environment
+    condition: succeeded('config_environment')
+  
