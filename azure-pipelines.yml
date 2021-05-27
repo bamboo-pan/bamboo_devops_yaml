@@ -31,7 +31,7 @@ stages:
           - script: echo finsih finish_config_environment_job1
         
       - job: RunsInContainer
-        container: ubuntu:16.0
+        container: ubuntu:latest
         dependsOn: []
         steps:
           - script: echo run in container
