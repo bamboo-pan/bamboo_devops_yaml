@@ -31,6 +31,8 @@ stages:
           - script: echo finsih finish_config_environment_job1
         
       - job: RunsInContainer
+        pool:
+          vmImage: ubuntu-latest
         container: ubuntu:latest
         dependsOn: []
         steps:
