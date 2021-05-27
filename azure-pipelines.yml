@@ -25,6 +25,8 @@ stages:
               TargetFolder: 'c:\temp'
 
       - job: finish_config_environment_job1
+        dependsOn: config_environment_job1
+        condition: succeeded()
         steps:
           - script: echo finsih finish_config_environment_job1
 
