@@ -23,6 +23,7 @@ stages:
             inputs:
               Contents: '**'
               TargetFolder: 'c:\temp'
+
       - job: finish_config_environment_job1
         steps:
           - script: echo finsih finish_config_environment_job1
