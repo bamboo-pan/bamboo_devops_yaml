@@ -49,11 +49,11 @@ stages:
         strategy:
           matrix:
             Python35:
-              PYTHON_VERSION: '3.5.10'
+              python.version: '3.5.10'
             Python36:
-              PYTHON_VERSION: '3.6.13'
+              python.version: '3.6.13'
             Python37:
-              PYTHON_VERSION: '3.8.10'
+              python.version: '3.8.10'
           maxParallel: 2
           
         pool:
