@@ -45,6 +45,25 @@ stages:
         steps:
           - script: echo run in new pool
 
+      - job: test_different_data_to_repeat_job
+        strategy:
+          matrix:
+            Python35:
+              PYTHON_VERSION: '3.5'
+            Python36:
+              PYTHON_VERSION: '3.6'
+            Python37:
+              PYTHON_VERSION: '3.7'
+          maxParallel: 2
+        pool:
+          vimage: ubuntu-latest
+        dependsOn: []
+        steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '$(python.version)'
+          displayName: 'Use Python $(python.version)'
+        - script: python -V
 
 
   - stage: run_script
