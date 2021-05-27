@@ -29,4 +29,8 @@ stages:
     displayName: run script stage
     dependsOn: config_environment
     condition: succeeded('config_environment')
+    jobs:
+      - job: run_script_job
+        steps:
+          - script: echo run_script
   
