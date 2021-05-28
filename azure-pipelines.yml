@@ -47,7 +47,8 @@ stages:
               ArtifactName: $(buildTimeStamp)
               publishLocation: 'Container'
           - task: PowerShell@2
-            displayName: set variable buildTimeStamp outside
+            name: set_outside
+            displayName: set_outside
             inputs:
               targetType: 'inline'
               script: |
@@ -69,11 +70,11 @@ stages:
               steps:
               - download: none
               - script: |
-                  echo $[dependencies.config_and_build.outputs['buildTimeStamp']]
+                  echo $[dependencies.config_and_build.outputs['set_outside.buildTimeStamp']]
                 displayName: show build time stamp
               - task: DownloadBuildArtifacts@0
                 inputs:
                   buildType: current
                   downloadType: single
-                  artifactName: $[dependencies.config_and_build.outputs['buildTimeStamp']]
+                  artifactName: $[dependencies.config_and_build.outputs['set_outside.buildTimeStamp']]
                   downloadPath: $(System.ArtifactsDirectory)
