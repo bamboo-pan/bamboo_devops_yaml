@@ -101,6 +101,7 @@ stages:
       - job: release
         dependsOn: deploy_package_and_run
         steps:
+          - checkout: none
           - script: |
                 set
             displayName: show_env
