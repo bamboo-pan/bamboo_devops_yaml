@@ -43,10 +43,11 @@ stages:
               mkdir package_manual
               move dist\run.exe  package_manual/
             displayName: prepare_artfact
+
           - task: PublishBuildArtifacts@1
             inputs:
               PathtoPublish: package_manual
-              ArtifactName: $(artfact_name)
+              ArtifactName: $(buildTimeStamp)
               publishLocation: 'Container'
                     
           - script: |
