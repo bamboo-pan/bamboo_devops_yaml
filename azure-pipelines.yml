@@ -3,8 +3,6 @@ trigger:
 pr:
 - main
 
-variables:
-  buildTimeStamp: # will be set by script
 
 pool:
   vmImage: windows-latest
@@ -16,12 +14,12 @@ stages:
       - job: config_and_build
         steps:
           - task: PowerShell@2
-            displayName: set variable buildTimeStamp
+            displayName: set variable buildTimeStamp inside
             inputs:
               targetType: 'inline'
               script: |
                 $date=$(Get-Date -Format yyyy-MM-dd_HH.mm);
-                Write-Host "##vso[task.setvariable variable=buildTimeStamp;isOutput=true]$date"
+                Write-Host "##vso[task.setvariable variable=buildTimeStamp]$date"
 
           - script: |
               echo $(buildTimeStamp)
@@ -48,7 +46,13 @@ stages:
               PathtoPublish: package_manual
               ArtifactName: $(buildTimeStamp)
               publishLocation: 'Container'
-                    
+          - task: PowerShell@2
+            displayName: set variable buildTimeStamp outside
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Host "##vso[task.setvariable variable=buildTimeStamp;isOutput=true]$buildTimeStamp"           
+          
           - script: |
               set
             displayName: show_env
