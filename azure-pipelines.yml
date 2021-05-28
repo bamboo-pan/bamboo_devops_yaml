@@ -52,7 +52,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                Write-Host "##vso[task.setvariable variable=buildTimeStamp;isOutput=true]$(buildTimeStamp)"           
+                Write-Host "##vso[task.setvariable variable=mytimestamp;isOutput=true]$(buildTimeStamp)"           
           
           - script: |
               set
@@ -64,17 +64,19 @@ stages:
         workspace:
           clean: all
         environment: bamboo_devops_yaml_environment
+        variables:
+          myVarFromJobA: $[ dependencies.config_and_build.outputs[set_outside.mytimestamp'] ]
         strategy:
           runOnce:
             deploy:
               steps:
               - download: none
               - script: |
-                  echo $[dependencies.config_and_build.outputs['set_outside.buildTimeStamp']]
+                  echo $(myVarFromJobA)
                 displayName: show build time stamp
               - task: DownloadBuildArtifacts@0
                 inputs:
                   buildType: current
                   downloadType: single
-                  artifactName: $[dependencies.config_and_build.outputs['set_outside.buildTimeStamp']]
+                  artifactName: $(myVarFromJobA)
                   downloadPath: $(System.ArtifactsDirectory)
