@@ -63,9 +63,10 @@ stages:
           runOnce:
             deploy:
               steps:
+              - download: none
               - task: DownloadBuildArtifacts@0
                 inputs:
-                  buildType: 'current'
-                  downloadType: 'single'
-                  artifactName: '$(buildTimeStamp)'
-                  downloadPath: '$(System.ArtifactsDirectory)'
+                  buildType: current
+                  downloadType: single
+                  artifactName: $(buildTimeStamp)
+                  downloadPath: $(System.ArtifactsDirectory)
