@@ -51,7 +51,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                Write-Host "##vso[task.setvariable variable=buildTimeStamp;isOutput=true]$buildTimeStamp"           
+                Write-Host "##vso[task.setvariable variable=buildTimeStamp;isOutput=true]$(buildTimeStamp)"           
           
           - script: |
               set
