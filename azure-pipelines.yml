@@ -88,8 +88,8 @@ stages:
                   $(System.ArtifactsDirectory)\$(myVarFromJobA)\run.exe
                 name: execute_run
               - task: PowerShell@2
-                name: set_title
-                displayName: set_title
+                name: settitle
+                displayName: settitle
                 inputs:
                   targetType: 'inline'
                   script: |
@@ -101,7 +101,7 @@ stages:
       - job: release
         dependsOn: deploy_package_and_run
         variables:
-          mytitle: $[ dependencies.deploy_package_and_run.outputs['set_title.releasetitle'] ]
+          mytitle: $[ dependencies.deploy_package_and_run.outputs['settitle.releasetitle'] ]
         steps:
           - script: |
                 set
