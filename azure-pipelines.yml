@@ -93,7 +93,7 @@ stages:
                 inputs:
                   targetType: 'inline'
                   script: |
-                    Write-Host "##vso[task.setvariable variable=release_title;isOutput=true]$(buildTimeStamp)"           
+                    Write-Host "##vso[task.setvariable variable=release_title;isOutput=true]$(myVarFromJobA)"           
               - script: |
                   set
                 displayName: show_env
