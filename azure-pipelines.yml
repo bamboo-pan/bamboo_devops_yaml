@@ -15,7 +15,6 @@ stages:
     jobs:
       - job: config_and_build
         steps:
-        
           - task: PowerShell@2
             displayName: set variable buildTimeStamp
             inputs:
@@ -54,3 +53,19 @@ stages:
               set
             displayName: show_env
 
+      - deployment: deploy_package_and_run
+        displayName: deploy_package_and_run
+        dependsOn: config_and_build
+        workspace:
+          clean: all
+        environment: bamboo_devops_yaml_environment
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - task: DownloadBuildArtifacts@0
+                inputs:
+                  buildType: 'current'
+                  downloadType: 'single'
+                  artifactName: '$(buildTimeStamp)'
+                  downloadPath: '$(System.ArtifactsDirectory)'
