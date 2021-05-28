@@ -85,7 +85,7 @@ stages:
                 displayName: show_env
 
               - script: |
-                  $(System.ArtifactsDirectory)\run.exe
+                  $(System.ArtifactsDirectory)\$((myVarFromJobA)\run.exe
                 name: execute_run
               - task: PowerShell@2
                 name: set_outside
