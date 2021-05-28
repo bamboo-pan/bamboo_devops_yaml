@@ -1,0 +1,118 @@
+trigger:
+- main
+pr:
+- main
+
+
+pool:
+  vmImage: windows-latest
+
+stages:
+  - stage: build
+    displayName: build package
+    jobs:
+      - job: config_and_build
+        steps:
+          - task: PowerShell@2
+            displayName: set variable buildTimeStamp inside
+            inputs:
+              targetType: 'inline'
+              script: |
+                $date=$(Get-Date -Format yyyy-MM-dd_HH.mm);
+                Write-Host "##vso[task.setvariable variable=buildTimeStamp]$date"
+
+          - script: |
+              echo $(buildTimeStamp)
+            displayName: show buildTimeStamp
+                        
+          - script: |
+              pip install -r requirement.txt
+            displayName: config_env
+
+
+
+          - script: |
+              pyinstaller -F run.py
+            displayName: build_package
+
+
+          - script: |
+              mkdir package_manual
+              move dist\run.exe  package_manual/
+            displayName: prepare_artfact
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: package_manual
+              ArtifactName: $(buildTimeStamp)
+              publishLocation: 'Container'
+          - task: PowerShell@2
+            name: set_outside
+            displayName: set_outside
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Host "##vso[task.setvariable variable=mytimestamp;isOutput=true]$(buildTimeStamp)"           
+          
+          - script: |
+              set
+            displayName: show_env
+
+      - deployment: deploy_package_and_run
+        displayName: deploy_package_and_run
+        dependsOn: config_and_build
+        workspace:
+          clean: all
+        environment: bamboo_devops_yaml_environment
+        variables:
+          myVarFromJobA: $[ dependencies.config_and_build.outputs['set_outside.mytimestamp'] ]
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - download: none
+              - script: |
+                  echo $(myVarFromJobA)
+                displayName: show build time stamp
+              - task: DownloadBuildArtifacts@0
+                inputs:
+                  buildType: current
+                  downloadType: single
+                  artifactName: $(myVarFromJobA)
+                  downloadPath: $(System.ArtifactsDirectory)
+              - script: |
+                  set
+                displayName: show_env
+
+              - script: |
+                  $(System.ArtifactsDirectory)\$(myVarFromJobA)\run.exe
+                name: execute_run
+              - task: PowerShell@2
+                name: set_outside
+                displayName: set_outside
+                inputs:
+                  targetType: 'inline'
+                  script: |
+                    Write-Host "##vso[task.setvariable variable=release_title;isOutput=true]$(myVarFromJobA)"           
+              - script: |
+                  set
+                displayName: show_env
+
+      - job: release
+        dependsOn: deploy_package_and_run
+        steps:
+          - checkout: none
+          - script: |
+                set
+            displayName: show_env
+          - task: GitHubRelease@1
+            inputs:
+              gitHubConnection: 'GitHub connection 1'
+              repositoryName: $(BUILD_REPOSITORY_ID)
+              action: 'create'
+              target: '$(Build.SourceVersion)'
+              tagSource: 'gitTag'
+              tagPattern: 'release_V[1-99].*'
+              title: $[ dependencies.deploy_package_and_run.outputs['set_outside.release_title'] ]
+              changeLogCompareToRelease: 'lastFullRelease'
+              changeLogType: 'commitBased'
