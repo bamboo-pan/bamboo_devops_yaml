@@ -65,7 +65,7 @@ stages:
           clean: all
         environment: bamboo_devops_yaml_environment
         variables:
-          myVarFromJobA: $[ dependencies.config_and_build.outputs[set_outside.mytimestamp'] ]
+          myVarFromJobA: $[ dependencies.config_and_build.outputs['set_outside.mytimestamp'] ]
         strategy:
           runOnce:
             deploy:
