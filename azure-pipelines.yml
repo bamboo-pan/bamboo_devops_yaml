@@ -88,8 +88,8 @@ stages:
                   $(System.ArtifactsDirectory)\$(myVarFromJobA)\run.exe
                 name: execute_run
               - task: PowerShell@2
-                name: set_outside
-                displayName: set_outside
+                name: set_title
+                displayName: set_title
                 inputs:
                   targetType: 'inline'
                   script: |
@@ -100,6 +100,8 @@ stages:
 
       - job: release
         dependsOn: deploy_package_and_run
+        variables:
+          mytitle: $[ dependencies.deploy_package_and_run.outputs['set_title.release_title'] ]
         steps:
           - script: |
                 set
@@ -110,5 +112,5 @@ stages:
             inputs:
               gitHubConnection: 'GitHub connection 1'
               tagPattern: 'release_V[1-99].*'
-              title: $[ dependencies.deploy_package_and_run.outputs['set_outside.release_title'] ]
+              title: $(mytitle)
               assets: $(Build.ArtifactStagingDirectory)/*.*
