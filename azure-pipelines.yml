@@ -21,6 +21,10 @@ stages:
             displayName: config_env
 
           - script: |
+              echo $(artfact_name)
+            displayName: show artfact name
+
+          - script: |
               pyinstaller -F run.py
             displayName: build_package
 
@@ -30,7 +34,7 @@ stages:
             displayName: prepare_artfact
           - task: PublishBuildArtifacts@1
             inputs:
-              PathtoPublish: '''$(Pipeline.Workspace)/s/package_manual'''
+              PathtoPublish: package_manual
               ArtifactName: $(artfact_name)
               publishLocation: 'Container'
                     
