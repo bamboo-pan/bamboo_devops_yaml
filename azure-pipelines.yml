@@ -93,7 +93,7 @@ stages:
                 inputs:
                   targetType: 'inline'
                   script: |
-                    Write-Host "##vso[task.setvariable variable=release_title;isOutput=true]$(myVarFromJobA)"           
+                    Write-Host "##vso[task.setvariable variable=releasetitle;isOutput=true]$(myVarFromJobA)"           
               - script: |
                   set
                 displayName: show_env
@@ -101,7 +101,7 @@ stages:
       - job: release
         dependsOn: deploy_package_and_run
         variables:
-          mytitle: $[ dependencies.deploy_package_and_run.outputs['set_title.release_title'] ]
+          mytitle: $[ dependencies.deploy_package_and_run.outputs['set_title.releasetitle'] ]
         steps:
           - script: |
                 set
