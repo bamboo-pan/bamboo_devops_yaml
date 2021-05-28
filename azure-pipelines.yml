@@ -4,8 +4,7 @@ pr:
 - main
 
 variables:
-- name: artfact_name
-  value: $(TeamProject)_$(Build.DefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+  buildTimeStamp: # will be set by script
 
 pool:
   vmImage: windows-latest
@@ -16,17 +15,29 @@ stages:
     jobs:
       - job: config_and_build
         steps:
+        
+          - task: PowerShell@2
+            displayName: set variable buildTimeStamp
+            inputs:
+              targetType: 'inline'
+              script: |
+                $date=$(Get-Date -Format yyyy-MM-dd_HH.mm);
+                Write-Host "##vso[task.setvariable variable=buildTimeStamp]$date"
+
+          - script: |
+              echo $(buildTimeStamp)
+            displayName: show buildTimeStamp
+                        
           - script: |
               pip install -r requirement.txt
             displayName: config_env
 
-          - script: |
-              echo $(artfact_name)
-            displayName: show artfact name
+
 
           - script: |
               pyinstaller -F run.py
             displayName: build_package
+
 
           - script: |
               mkdir package_manual
