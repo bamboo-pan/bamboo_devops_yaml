@@ -5,7 +5,7 @@ pr:
 
 variables:
 - name: artfact_name
-  value: build_artfact_$(Date:yyyyMMdd)$(Rev:.r)
+  value: build_artfact_${{Date:yyyyMMdd}}_${{Rev:.r}}
 
 pool:
   vmImage: windows-latest
