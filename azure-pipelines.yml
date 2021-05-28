@@ -80,3 +80,6 @@ stages:
                   downloadType: single
                   artifactName: $(myVarFromJobA)
                   downloadPath: $(System.ArtifactsDirectory)
+              - script: |
+                  set
+                displayName: show_env
