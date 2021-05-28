@@ -64,6 +64,9 @@ stages:
             deploy:
               steps:
               - download: none
+              - script: |
+                  echo $(buildTimeStamp)
+                displayName: show build time stamp
               - task: DownloadBuildArtifacts@0
                 inputs:
                   buildType: current
