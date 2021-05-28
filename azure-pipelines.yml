@@ -1,78 +1,40 @@
 trigger:
 - main
+pr:
+- main
 
+variables:
+- name: artfact_name
+  value: build_artfact_$(Date:yyyyMMdd)$(Rev:.r)
 
 pool:
   vmImage: windows-latest
 
 stages:
-  - stage: config_environment
-    displayName: config environment stage
+  - stage: build
+    displayName: build package
     jobs:
-      - job: config_environment_job1
+      - job: config_and_build
         steps:
-          - script: echo config_environment_job1 run
-            displayName: run script in one line
+          - script: |
+              pip install -r requirement.txt
+            displayName: config_env
 
           - script: |
-              echo config_environment_job1 run
-              echo config_environment_job1 run again
-            displayName: run script in multiple line
+              pyinstaller -F run.py
+            displayName: build_package
 
-          - task: CopyFiles@2
+          - script: |
+              mkdir package_manual
+              move dist\run.exe  package_manual/
+            displayName: prepare_artfact
+          - task: PublishBuildArtifacts@1
             inputs:
-              Contents: '**'
-              TargetFolder: 'c:\temp'
+              PathtoPublish: '''$(Pipeline.Workspace)/s/package_manual'''
+              ArtifactName: $(artfact_name)
+              publishLocation: 'Container'
+                    
+          - script: |
+              set
+            displayName: show_env
 
-      - job: finish_config_environment_job1
-        dependsOn: config_environment_job1
-        condition: succeeded()
-        steps:
-          - script: echo finsih finish_config_environment_job1
-        
-      - job: RunsInContainer
-        pool:
-          vmImage: ubuntu-latest
-        container: ubuntu:latest
-        dependsOn: []
-        steps:
-          - script: echo run in container
-        
-      - job: RunsInNewPool
-        pool:
-          vimage: ubuntu-latest
-        dependsOn: []
-        steps:
-          - script: echo run in new pool
-
-      - job: test_different_data_to_repeat_job
-        strategy:
-          matrix:
-            Python35:
-              python.version: '3.5.10'
-            Python36:
-              python.version: '3.6.13'
-            Python37:
-              python.version: '3.8.10'
-          maxParallel: 2
-          
-        pool:
-          vimage: ubuntu-latest
-        dependsOn: []
-        steps:
-        - task: UsePythonVersion@0
-          inputs:
-            versionSpec: '$(python.version)'
-          displayName: 'Use Python $(python.version)'
-        - script: python -V
-
-
-  - stage: run_script
-    displayName: run script stage
-    dependsOn: config_environment
-    condition: succeeded('config_environment')
-    jobs:
-      - job: run_script_job
-        steps:
-          - script: echo run_script
-  
