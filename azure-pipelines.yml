@@ -109,6 +109,6 @@ stages:
               target: '$(Build.SourceVersion)'
               tagSource: 'gitTag'
               tagPattern: 'release_V[1-99].*'
-              title: $[ dependencies.deploy_package_and_run.outputs['set_outside.=release_title'] ]
+              title: $[ dependencies.deploy_package_and_run.outputs['set_outside.release_title'] ]
               changeLogCompareToRelease: 'lastFullRelease'
               changeLogType: 'commitBased'
