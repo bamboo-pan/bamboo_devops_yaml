@@ -21,7 +21,7 @@ stages:
               targetType: 'inline'
               script: |
                 $date=$(Get-Date -Format yyyy-MM-dd_HH.mm);
-                Write-Host "##vso[task.setvariable variable=buildTimeStamp]$date"
+                Write-Host "##vso[task.setvariable variable=buildTimeStamp;isOutput=true]$date"
 
           - script: |
               echo $(buildTimeStamp)
@@ -65,11 +65,11 @@ stages:
               steps:
               - download: none
               - script: |
-                  echo $(buildTimeStamp)
+                  echo $[dependencies.config_and_build.outputs['buildTimeStamp']]
                 displayName: show build time stamp
               - task: DownloadBuildArtifacts@0
                 inputs:
                   buildType: current
                   downloadType: single
-                  artifactName: $(buildTimeStamp)
+                  artifactName: $[dependencies.config_and_build.outputs['buildTimeStamp']]
                   downloadPath: $(System.ArtifactsDirectory)
