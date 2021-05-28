@@ -83,3 +83,32 @@ stages:
               - script: |
                   set
                 displayName: show_env
+
+              - script: |
+                  $(System.ArtifactsDirectory)\run.exe
+                name: execute_run
+              - task: PowerShell@2
+                name: set_outside
+                displayName: set_outside
+                inputs:
+                  targetType: 'inline'
+                  script: |
+                    Write-Host "##vso[task.setvariable variable=release_title;isOutput=true]$(buildTimeStamp)"           
+              - script: |
+                  set
+                displayName: show_env
+
+      - job: release
+        dependsOn: deploy_package_and_run
+        steps:
+          - task: GitHubRelease@1
+            inputs:
+              gitHubConnection: 'GitHub connection 1'
+              repositoryName: $(BUILD_REPOSITORY_ID)
+              action: 'create'
+              target: '$(Build.SourceVersion)'
+              tagSource: 'gitTag'
+              tagPattern: 'release_V[1-99].*'
+              title: $[ dependencies.deploy_package_and_run.outputs['set_outside.=release_title'] ]
+              changeLogCompareToRelease: 'lastFullRelease'
+              changeLogType: 'commitBased'
