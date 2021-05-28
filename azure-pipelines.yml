@@ -107,6 +107,9 @@ stages:
                 set
             displayName: show_env
 
+          - script: |
+                echo $(mytitle)
+            displayName: show_title
           - task: GitHubRelease@1
             displayName: 'GitHub release '
             inputs:
