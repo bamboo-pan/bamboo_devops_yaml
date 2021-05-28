@@ -87,33 +87,16 @@ stages:
               - script: |
                   $(System.ArtifactsDirectory)\$(myVarFromJobA)\run.exe
                 name: execute_run
-              - task: PowerShell@2
-                name: settitle
-                displayName: settitle
-                inputs:
-                  targetType: 'inline'
-                  script: |
-                    Write-Host "##vso[task.setvariable variable=releasetitle;isOutput=true]$(myVarFromJobA)"           
+                         
               - script: |
                   set
                 displayName: show_env
+              
+              - task: GitHubRelease@1
+                displayName: 'GitHub release '
+                inputs:
+                  gitHubConnection: 'GitHub connection 1'
+                  tagPattern: 'release_V[1-99].*'
+                  title: $(myVarFromJobA)
+                  assets: $(System.ArtifactsDirectory)/*.*
 
-      - job: release
-        dependsOn: deploy_package_and_run
-        variables:
-          mytitle: $[ dependencies.deploy_package_and_run.outputs['settitle.releasetitle'] ]
-        steps:
-          - script: |
-                set
-            displayName: show_env
-
-          - script: |
-                echo $(mytitle)
-            displayName: show_title
-          - task: GitHubRelease@1
-            displayName: 'GitHub release '
-            inputs:
-              gitHubConnection: 'GitHub connection 1'
-              tagPattern: 'release_V[1-99].*'
-              title: $(mytitle)
-              assets: $(Build.ArtifactStagingDirectory)/*.*
